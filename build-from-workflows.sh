@@ -155,6 +155,7 @@ while read commit; do
 		cd $CURRENT_DIR/gutenberg-dev;
 		# Run fnm use --install-if-missing
 		fnm use --install-if-missing;
+		npm i;
 
 		# Run the script bin/build-plugin-zip.sh
 		NO_CHECKS=true ./bin/build-plugin-zip.sh
@@ -203,6 +204,16 @@ while read commit; do
 	# Tag the commit with the tags.
 	for commitTag in $commitTags; do
 		echo "Tagging commit $commit with tag $commitTag";
+
+		# If the tag already exists then replace it.
+		if [[ $(git tag --list $commitTag) ]]; then
+			echo "Tag $commitTag already exists for commit $commit";
+			# Delete the tag locally
+			git tag -d $commitTag;
+			# Delete the tag remotely
+			git push origin :refs/tags/$commitTag;
+			# continue;
+		fi
 
 		git tag --no-sign -f $commitTag;
 	done

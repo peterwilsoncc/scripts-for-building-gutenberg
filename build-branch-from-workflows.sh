@@ -203,6 +203,7 @@ while read commit; do
 		cd $CURRENT_DIR/gutenberg-dev;
 		# Run fnm use --install-if-missing
 		fnm use --install-if-missing;
+		npm i;
 
 		# Run the script bin/build-plugin-zip.sh
 		NO_CHECKS=true ./bin/build-plugin-zip.sh
@@ -240,7 +241,7 @@ while read commit; do
 	# Search and replace the %%COMMIT_SHORT%% with the commit short hash in the readme file.
 	sed -i '' "s/%%COMMIT_SHORT%%/$commitShortHash/g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
 	# Search and replace the %%BRANCH%% with the branch name in the readme file.
-	sed -i '' "s/%%BRANCH%%/$BRANCH/g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
+	sed -i '' "s|%%BRANCH%%|$BRANCH|g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
 
 	# Add all the files to the git repository
 	git add .
@@ -256,10 +257,14 @@ while read commit; do
 			continue;
 		fi
 
-		# If the tag already exists then skip it.
+		# If the tag already exists then replace it.
 		if [[ $(git tag --list $commitTag) ]]; then
 			echo "Tag $commitTag already exists for commit $commit";
-			continue;
+			# Delete the tag locally
+			git tag -d $commitTag;
+			# Delete the tag remotely
+			git push origin :refs/tags/$commitTag;
+			# continue;
 		fi
 
 
@@ -272,4 +277,4 @@ done < $CURRENT_DIR/log-files/$BRANCH_FILE_NAME-workflow-commits-reversed.txt;
 
 cd $CURRENT_DIR/plugins/gutenberg-build;
 git push origin $BRANCH:$BRANCH --force;
-git push origin --tags;
+git push origin -f --tags;
