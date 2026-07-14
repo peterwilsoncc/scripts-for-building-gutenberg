@@ -6,6 +6,16 @@ BRANCH="trunk";
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
+# Detect which command to use for reversing file lines
+if tail -r /dev/null &>/dev/null 2>&1; then
+	REVERSE_CMD="tail -r"
+elif command -v tac &>/dev/null; then
+	REVERSE_CMD="tac"
+else
+	echo "Error: Neither 'tail -r' nor 'tac' command is available. Cannot reverse file lines." >&2
+	exit 1
+fi
+
 # ## Check out the branch in the gutenberg directory.
 cd $CURRENT_DIR/gutenberg-dev;
 git checkout $BRANCH;
@@ -29,7 +39,7 @@ if [[ $(git branch --list $BRANCH) ]]; then
 	git checkout $BRANCH;
 
 	# Get the latest commit message from the branch.
-	commitSourceLine=$(git log -1 --pretty=%B | tail -r -n2 | tail -r -n1);
+	commitSourceLine=$(git log -1 --pretty=%B | $REVERSE_CMD | tail -n2 | $REVERSE_CMD | tail -n1);
 
 	# Get the last 42 characters of the commits source line.
 	latestSourceCommit=$(echo $commitSourceLine | tail -c 41);
@@ -69,7 +79,7 @@ fi
 
 
 # Put the commits in the reverse order
-tail -r $CURRENT_DIR/log-files/$BRANCH-workflow-commits.txt > $CURRENT_DIR/log-files/$BRANCH-workflow-commits-reversed.txt;
+$REVERSE_CMD $CURRENT_DIR/log-files/$BRANCH-workflow-commits.txt > $CURRENT_DIR/log-files/$BRANCH-workflow-commits-reversed.txt;
 echo "" >> $CURRENT_DIR/log-files/$BRANCH-workflow-commits-reversed.txt;
 
 
