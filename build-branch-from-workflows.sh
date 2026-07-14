@@ -28,6 +28,8 @@ git fetch;
 git checkout $BRANCH;
 git pull;
 
+# Ensure log-files directory exists
+mkdir -p $CURRENT_DIR/log-files;
 # Get the commits from the merge base to HEAD.
 git log $MERGE_BASE..HEAD --pretty=format:"%H" > $CURRENT_DIR/log-files/$BRANCH_FILE_NAME-workflow-commits.txt;
 # Add new line to the end of the file.
@@ -190,7 +192,8 @@ while read commit; do
 	# Return to the top direcoty
 	cd $CURRENT_DIR;
 
-	# Empty the gutenberg-zip directory
+	# Ensure gutenberg-zip directory exists and empty it
+	mkdir -p $CURRENT_DIR/gutenberg-zip;
 	rm -rf $CURRENT_DIR/gutenberg-zip/*;
 
 	needToDoItTheHardWay=false;

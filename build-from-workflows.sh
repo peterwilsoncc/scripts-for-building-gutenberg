@@ -23,6 +23,8 @@ fi
 cd $CURRENT_DIR/gutenberg-dev;
 git checkout $BRANCH;
 git pull ;
+# Ensure log-files directory exists
+mkdir -p $CURRENT_DIR/log-files;
 # Get commits from last 100 days
 git log --since="93 days ago" --pretty=format:"%H" > $CURRENT_DIR/log-files/$BRANCH-workflow-commits.txt;
 # Add new line to the end of the file.
@@ -145,7 +147,8 @@ while read commit; do
 	# Return to the top direcoty
 	cd $CURRENT_DIR;
 
-	# Empty the gutenberg-zip directory
+	# Ensure gutenberg-zip directory exists and empty it
+	mkdir -p $CURRENT_DIR/gutenberg-zip;
 	rm -rf $CURRENT_DIR/gutenberg-zip/*;
 
 	needToDoItTheHardWay=false;
