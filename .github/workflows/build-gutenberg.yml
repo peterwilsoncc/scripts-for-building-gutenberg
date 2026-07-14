@@ -55,27 +55,69 @@ jobs:
         # env:
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Log trunk commits
+        run: |
+          cd plugins/gutenberg-build
+          echo "Recent commits on trunk branch:"
+          git log --oneline -20
+
       - name: Build latest releases
         run: bash build-latest-releases.sh
         # env:
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log latest releases commits
+        run: |
+          cd plugins/gutenberg-build
+          echo "Branches built:"
+          git branch -a
+          echo "Recent commits:"
+          git log --all --oneline -20
 
       - name: Build wp/6.7 branch
         run: bash build-branch-from-workflows.sh wp/6.7
         # env:
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Log wp/6.7 commits
+        run: |
+          cd plugins/gutenberg-build
+          git checkout wp/6.7
+          echo "Recent commits on wp/6.7 branch:"
+          git log --oneline -20
+
       - name: Build wp/6.8 branch
         run: bash build-branch-from-workflows.sh wp/6.8
         # env:
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log wp/6.8 commits
+        run: |
+          cd plugins/gutenberg-build
+          git checkout wp/6.8
+          echo "Recent commits on wp/6.8 branch:"
+          git log --oneline -20
 
       - name: Build wp/6.9 branch
         run: bash build-branch-from-workflows.sh wp/6.9
         # env:
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Log wp/6.9 commits
+        run: |
+          cd plugins/gutenberg-build
+          git checkout wp/6.9
+          echo "Recent commits on wp/6.9 branch:"
+          git log --oneline -20
+
       - name: Build wp/7.0 branch
         run: bash build-branch-from-workflows.sh wp/7.0
         # env:
         #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Log wp/7.0 commits
+        run: |
+          cd plugins/gutenberg-build
+          git checkout wp/7.0
+          echo "Recent commits on wp/7.0 branch:"
+          git log --oneline -20
