@@ -43,11 +43,6 @@ jobs:
         with:
           node-version-file: 'gutenberg-dev/.nvmrc'
 
-      - name: Install fnm (Fast Node Manager)
-        uses: fnm-rs/fnm-action@v1
-        with:
-          install: false
-
       - name: Configure Git
         run: |
           git config --global user.name "peterwilsonbcc"

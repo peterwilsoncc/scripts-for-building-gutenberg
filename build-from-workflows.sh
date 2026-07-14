@@ -6,6 +6,9 @@ BRANCH="trunk";
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
+# Include the functions file.
+source $CURRENT_DIR/functions.sh
+
 # Detect which command to use for reversing file lines
 if tail -r /dev/null &>/dev/null 2>&1; then
 	REVERSE_CMD="tail -r"
@@ -163,8 +166,8 @@ while read commit; do
 
 	if [ "$needToDoItTheHardWay" = true ]; then
 		cd $CURRENT_DIR/gutenberg-dev;
-		# Run fnm use --install-if-missing
-		fnm use --install-if-missing;
+		# Setup Node.js using fnm or nvm
+		setup_node;
 		npm i;
 
 		# Run the script bin/build-plugin-zip.sh

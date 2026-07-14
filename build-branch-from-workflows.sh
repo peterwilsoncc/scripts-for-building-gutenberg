@@ -211,8 +211,8 @@ while read commit; do
 
 	if [ "$needToDoItTheHardWay" = true ]; then
 		cd $CURRENT_DIR/gutenberg-dev;
-		# Run fnm use --install-if-missing
-		fnm use --install-if-missing;
+		# Setup Node.js using fnm or nvm
+		setup_node;
 		npm i;
 
 		# Run the script bin/build-plugin-zip.sh

@@ -1,5 +1,29 @@
 #!/bin/bash
 
+# Setup Node.js using fnm or nvm
+function setup_node() {
+	# Check if fnm is available
+	if command -v fnm &>/dev/null; then
+		echo "Using fnm to setup Node.js"
+		fnm use --install-if-missing
+		return 0
+	fi
+
+	# Check if nvm is available
+	if [ -s "$HOME/.nvm/nvm.sh" ]; then
+		echo "Using nvm to setup Node.js"
+		# Load nvm
+		source "$HOME/.nvm/nvm.sh"
+		# Install and use the version from .nvmrc
+		nvm install
+		nvm use
+		return 0
+	fi
+
+	echo "Error: Neither fnm nor nvm found. Cannot setup Node.js" >&2
+	exit 1
+}
+
 # Get the fork origin of a given branch.
 function fork_origin() {
 	CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
