@@ -44,7 +44,7 @@ git reset --hard;
 git checkout trunk;
 
 # Checkout the main branch
-git checkout main;
+# git checkout main;
 
 # If the branch exists, check it out.
 if [[ $(git branch --list $BRANCH) ]]; then
