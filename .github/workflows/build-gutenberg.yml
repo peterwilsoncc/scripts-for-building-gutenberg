@@ -2,9 +2,9 @@ name: Build Gutenberg
 
 on:
   workflow_dispatch:
-  schedule:
-    # Run daily at 2:00 AM UTC
-    - cron: '0 2 * * *'
+  # schedule:
+  #   # Run daily at 2:00 AM UTC
+  #   - cron: '0 2 * * *'
 
 jobs:
   build-all:
@@ -27,8 +27,13 @@ jobs:
         with:
           repository: peterwilsoncc/gutenberg-build
           path: plugins/gutenberg-build
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
+
+      - name: Remove git remote from gutenberg-build (testing mode)
+        run: |
+          cd plugins/gutenberg-build
+          git remote remove origin
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -47,30 +52,30 @@ jobs:
 
       - name: Build trunk branch
         run: bash build-from-workflows.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build latest releases
         run: bash build-latest-releases.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build wp/6.7 branch
         run: bash build-branch-from-workflows.sh wp/6.7
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build wp/6.8 branch
         run: bash build-branch-from-workflows.sh wp/6.8
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build wp/6.9 branch
         run: bash build-branch-from-workflows.sh wp/6.9
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build wp/7.0 branch
         run: bash build-branch-from-workflows.sh wp/7.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
