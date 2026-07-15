@@ -83,7 +83,6 @@ else
 fi
 
 
-exit;
 
 
 
@@ -97,6 +96,9 @@ exit;
 # Put the commits in the reverse order
 $REVERSE_CMD $CURRENT_DIR/log-files/$BRANCH-workflow-commits.txt > $CURRENT_DIR/log-files/$BRANCH-workflow-commits-reversed.txt;
 echo "" >> $CURRENT_DIR/log-files/$BRANCH-workflow-commits-reversed.txt;
+
+
+exit;
 
 
 ## Loop through each commit from the bottom of the file and check it out.
