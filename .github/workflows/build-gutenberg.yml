@@ -30,7 +30,7 @@ jobs:
         with:
           repository: peterwilsoncc/gutenberg-build
           path: plugins/gutenberg-build
-          # token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -45,8 +45,8 @@ jobs:
 
       - name: Build trunk branch
         run: bash build-from-workflows.sh
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Log trunk commits
         run: |
@@ -56,8 +56,8 @@ jobs:
 
       - name: Build latest releases
         run: bash build-latest-releases.sh
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Log latest releases commits
         run: |
@@ -69,8 +69,8 @@ jobs:
 
       - name: Build wp/6.7 branch
         run: bash build-branch-from-workflows.sh wp/6.7
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Log wp/6.7 commits
         run: |
@@ -81,8 +81,8 @@ jobs:
 
       - name: Build wp/6.8 branch
         run: bash build-branch-from-workflows.sh wp/6.8
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Log wp/6.8 commits
         run: |
@@ -93,8 +93,8 @@ jobs:
 
       - name: Build wp/6.9 branch
         run: bash build-branch-from-workflows.sh wp/6.9
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Log wp/6.9 commits
         run: |
@@ -105,8 +105,8 @@ jobs:
 
       - name: Build wp/7.0 branch
         run: bash build-branch-from-workflows.sh wp/7.0
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Log wp/7.0 commits
         run: |
