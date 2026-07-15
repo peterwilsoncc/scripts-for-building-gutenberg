@@ -33,7 +33,7 @@ jobs:
         with:
           repository: peterwilsoncc/gutenberg-build
           path: plugins/gutenberg-build
-          token: ${{ secrets.GITHUB_TOKEN }}
+          ssh-key: ${{ github.ref == 'refs/heads/main' && secrets.PWCC_DEPLOY_KEY || '' }}
           fetch-depth: 0
 
       - name: Fetch and create local tracking branches
