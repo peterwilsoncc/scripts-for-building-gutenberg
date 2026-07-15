@@ -19,6 +19,15 @@ else
 	exit 1
 fi
 
+# Detect OS for sed syntax (macOS vs Linux)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	# macOS requires empty string after -i
+	SED_INPLACE="sed -i ''"
+else
+	# Linux sed uses -i without argument
+	SED_INPLACE="sed -i"
+fi
+
 # Include the functions file.
 source $CURRENT_DIR/functions.sh
 
@@ -250,11 +259,11 @@ while read commit; do
 	cp $CURRENT_DIR/_replacement-readme.md $CURRENT_DIR/plugins/gutenberg-build/README.md;
 
 	## Search and replace the %%COMMIT%% with the commit hash in the readme file.
-	sed -i '' "s/%%COMMIT%%/$commit/g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
+	$SED_INPLACE "s/%%COMMIT%%/$commit/g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
 	# Search and replace the %%COMMIT_SHORT%% with the commit short hash in the readme file.
-	sed -i '' "s/%%COMMIT_SHORT%%/$commitShortHash/g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
+	$SED_INPLACE "s/%%COMMIT_SHORT%%/$commitShortHash/g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
 	# Search and replace the %%BRANCH%% with the branch name in the readme file.
-	sed -i '' "s|%%BRANCH%%|$BRANCH|g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
+	$SED_INPLACE "s|%%BRANCH%%|$BRANCH|g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
 
 	# Add all the files to the git repository
 	git add .
