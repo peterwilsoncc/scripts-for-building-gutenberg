@@ -53,7 +53,7 @@ if [[ $(git branch --list $BRANCH) ]]; then
 	git checkout $BRANCH;
 
 	# Get the latest commit's source hash from the commit body.
-	latestSourceCommit=$(git log -1 --pretty=%B | grep -i 'commit/' | sed 's/.*commit\/\([0-9a-fA-F]\{40\}\).*/\1/');
+	latestSourceCommit=$(git log -1 --pretty=%B | awk '/[Cc]ommit\/[0-9a-fA-F]{40}/ { match($0, /[0-9a-fA-F]{40}/); print substr($0, RSTART, RLENGTH); exit }');
 
 	if [ -z "$latestSourceCommit" ]; then
 		echo "Error: Could not extract source commit from last build commit" >&2
