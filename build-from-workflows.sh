@@ -55,17 +55,13 @@ if [[ $(git branch --list $BRANCH) ]]; then
 	# Get the latest commit's source hash from the commit body.
 	# Get the full commit message
 	commitBody=$(git log -1 --pretty=%B);
-	# Trim all trailing whitespace (tabs, spaces, newlines) from the entire message
-	commitBodyTrimmed=$(echo "$commitBody" | sed -e :a -e '/^\s*$/d;/\n$/N;//ba');
-	# Get the last line
-	lastLine=$(echo "$commitBodyTrimmed" | tail -n 1);
-	# Extract the 40-character hash from the last line
-	latestSourceCommit=$(echo "$lastLine" | awk '{ match($0, /[0-9a-fA-F]{40}/); if (RSTART > 0) print substr($0, RSTART, RLENGTH) }');
+	# Find the Source line and extract the hash
+	latestSourceCommit=$(echo "$commitBody" | grep -o 'github.com/WordPress/gutenberg/commit/[0-9a-fA-F]\{40\}' | grep -o '[0-9a-fA-F]\{40\}' || echo "");
 
 	if [ -z "$latestSourceCommit" ]; then
 		echo "Error: Could not extract source commit from last build commit" >&2
-		echo "Commit body was: $commitBody" >&2
-		echo "Last line was: $lastLine" >&2
+		echo "Commit body was:" >&2
+		echo "$commitBody" >&2
 		exit 1
 	fi
 
