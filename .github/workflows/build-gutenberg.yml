@@ -182,3 +182,20 @@ jobs:
           git checkout wp/7.0
           echo "Recent commits on wp/7.0 branch:"
           git log --oneline -20
+
+      - name: Build wp/7.1 branch
+        run: bash build-branch-from-workflows.sh wp/7.1
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Log wp/7.1 reversed commits file
+        run: |
+          echo "Contents of log-files/wp-7.1-workflow-commits-reversed.txt:"
+          cat log-files/wp-7.1-workflow-commits-reversed.txt
+
+      - name: Log wp/7.1 commits
+        run: |
+          cd plugins/gutenberg-build
+          git checkout wp/7.1
+          echo "Recent commits on wp/7.1 branch:"
+          git log --oneline -20
