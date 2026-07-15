@@ -9,6 +9,10 @@ on:
   #   # Run daily at 2:00 AM UTC
   #   - cron: '0 2 * * *'
 
+concurrency:
+  group: build-gutenberg
+  cancel-in-progress: true
+
 jobs:
   build-all:
     name: Build Gutenberg branches
