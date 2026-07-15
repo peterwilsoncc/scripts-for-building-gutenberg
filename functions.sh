@@ -1,5 +1,47 @@
 #!/bin/bash
 
+# Check if git push should be allowed
+# Returns 0 (true) if push is allowed, 1 (false) if not
+function should_allow_push() {
+	# If not in GitHub Actions, allow push
+	if [ "$GITHUB_ACTIONS" != "true" ]; then
+		return 0
+	fi
+
+	# In GitHub Actions, only allow push on main branch
+	if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
+		echo "Running on main branch in GitHub Actions - push allowed"
+		return 0
+	else
+		echo "Running on non-main branch in GitHub Actions - push disabled"
+		return 1
+	fi
+}
+
+# Setup Node.js using fnm or nvm
+function setup_node() {
+	# Check if fnm is available
+	if command -v fnm &>/dev/null; then
+		echo "Using fnm to setup Node.js"
+		fnm use --install-if-missing
+		return 0
+	fi
+
+	# Check if nvm is available
+	if [ -s "$HOME/.nvm/nvm.sh" ]; then
+		echo "Using nvm to setup Node.js"
+		# Load nvm
+		source "$HOME/.nvm/nvm.sh"
+		# Install and use the version from .nvmrc
+		nvm install
+		nvm use
+		return 0
+	fi
+
+	echo "Error: Neither fnm nor nvm found. Cannot setup Node.js" >&2
+	exit 1
+}
+
 # Get the fork origin of a given branch.
 function fork_origin() {
 	CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"

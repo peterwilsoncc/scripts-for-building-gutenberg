@@ -6,10 +6,34 @@ BRANCH="trunk";
 
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
+# Include the functions file.
+source $CURRENT_DIR/functions.sh
+
+# Detect which command to use for reversing file lines
+if tail -r /dev/null &>/dev/null 2>&1; then
+	REVERSE_CMD="tail -r"
+elif command -v tac &>/dev/null; then
+	REVERSE_CMD="tac"
+else
+	echo "Error: Neither 'tail -r' nor 'tac' command is available. Cannot reverse file lines." >&2
+	exit 1
+fi
+
+# Detect OS for sed syntax (macOS vs Linux)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	# macOS requires empty string after -i
+	SED_INPLACE="sed -i ''"
+else
+	# Linux sed uses -i without argument
+	SED_INPLACE="sed -i"
+fi
+
 # ## Check out the branch in the gutenberg directory.
 cd $CURRENT_DIR/gutenberg-dev;
 git checkout $BRANCH;
 git pull ;
+# Ensure log-files directory exists
+mkdir -p $CURRENT_DIR/log-files;
 # Get commits from last 100 days
 git log --since="93 days ago" --pretty=format:"%H" > $CURRENT_DIR/log-files/$BRANCH-workflow-commits.txt;
 # Add new line to the end of the file.
@@ -22,17 +46,24 @@ cd $CURRENT_DIR/plugins/gutenberg-build;
 git reset --hard;
 
 # Checkout the main branch
-git checkout main;
+# git checkout main;
 
 # If the branch exists, check it out.
 if [[ $(git branch --list $BRANCH) ]]; then
 	git checkout $BRANCH;
 
-	# Get the latest commit message from the branch.
-	commitSourceLine=$(git log -1 --pretty=%B | tail -r -n2 | tail -r -n1);
+	# Get the latest commit's source hash from the commit body.
+	# Get the full commit message
+	commitBody=$(git log -1 --pretty=%B);
+	# Find the Source line and extract the hash
+	latestSourceCommit=$(echo "$commitBody" | grep -o 'github.com/WordPress/gutenberg/commit/[0-9a-fA-F]\{40\}' | grep -o '[0-9a-fA-F]\{40\}' || echo "");
 
-	# Get the last 42 characters of the commits source line.
-	latestSourceCommit=$(echo $commitSourceLine | tail -c 41);
+	if [ -z "$latestSourceCommit" ]; then
+		echo "Error: Could not extract source commit from last build commit" >&2
+		echo "Commit body was:" >&2
+		echo "$commitBody" >&2
+		exit 1
+	fi
 
 	echo "Most recent source commit: $latestSourceCommit";
 
@@ -57,7 +88,6 @@ else
 fi
 
 
-# exit;
 
 
 
@@ -69,8 +99,11 @@ fi
 
 
 # Put the commits in the reverse order
-tail -r $CURRENT_DIR/log-files/$BRANCH-workflow-commits.txt > $CURRENT_DIR/log-files/$BRANCH-workflow-commits-reversed.txt;
+$REVERSE_CMD $CURRENT_DIR/log-files/$BRANCH-workflow-commits.txt > $CURRENT_DIR/log-files/$BRANCH-workflow-commits-reversed.txt;
 echo "" >> $CURRENT_DIR/log-files/$BRANCH-workflow-commits-reversed.txt;
+
+
+# exit;
 
 
 ## Loop through each commit from the bottom of the file and check it out.
@@ -132,7 +165,8 @@ while read commit; do
 	# Return to the top direcoty
 	cd $CURRENT_DIR;
 
-	# Empty the gutenberg-zip directory
+	# Ensure gutenberg-zip directory exists and empty it
+	mkdir -p $CURRENT_DIR/gutenberg-zip;
 	rm -rf $CURRENT_DIR/gutenberg-zip/*;
 
 	needToDoItTheHardWay=false;
@@ -153,8 +187,8 @@ while read commit; do
 
 	if [ "$needToDoItTheHardWay" = true ]; then
 		cd $CURRENT_DIR/gutenberg-dev;
-		# Run fnm use --install-if-missing
-		fnm use --install-if-missing;
+		# Setup Node.js using fnm or nvm
+		setup_node;
 		npm i;
 
 		# Run the script bin/build-plugin-zip.sh
@@ -189,11 +223,11 @@ while read commit; do
 	cp $CURRENT_DIR/_replacement-readme.md $CURRENT_DIR/plugins/gutenberg-build/README.md;
 
 	## Search and replace the %%COMMIT%% with the commit hash in the readme file.
-	sed -i '' "s/%%COMMIT%%/$commit/g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
+	$SED_INPLACE "s/%%COMMIT%%/$commit/g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
 	# Search and replace the %%COMMIT_SHORT%% with the commit short hash in the readme file.
-	sed -i '' "s/%%COMMIT_SHORT%%/$commitShortHash/g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
+	$SED_INPLACE "s/%%COMMIT_SHORT%%/$commitShortHash/g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
 	# Search and replace the %%BRANCH%% with the branch name in the readme file.
-	sed -i '' "s/%%BRANCH%%/$BRANCH/g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
+	$SED_INPLACE "s/%%BRANCH%%/$BRANCH/g" $CURRENT_DIR/plugins/gutenberg-build/README.md;
 
 	# Add all the files to the git repository
 	git add .
@@ -210,8 +244,10 @@ while read commit; do
 			echo "Tag $commitTag already exists for commit $commit";
 			# Delete the tag locally
 			git tag -d $commitTag;
-			# Delete the tag remotely
-			git push origin :refs/tags/$commitTag;
+			# Delete the tag remotely if push is allowed
+			if should_allow_push; then
+				git push origin :refs/tags/$commitTag;
+			fi
 			# continue;
 		fi
 
@@ -221,5 +257,11 @@ while read commit; do
 done < $CURRENT_DIR/log-files/$BRANCH-workflow-commits-reversed.txt;
 
 cd $CURRENT_DIR/plugins/gutenberg-build;
-git push origin $BRANCH:$BRANCH --force;
-git push origin --tags;
+
+# Only push if not in GitHub Actions or on main branch
+if should_allow_push; then
+	git push origin $BRANCH:$BRANCH --force;
+	git push origin --tags;
+else
+	echo "Skipping git push (not on main branch in GitHub Actions)";
+fi

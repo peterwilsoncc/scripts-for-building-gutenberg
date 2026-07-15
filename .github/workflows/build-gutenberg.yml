@@ -1,0 +1,177 @@
+name: Build Gutenberg
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '5 */2 * * *'
+
+concurrency:
+  group: build-gutenberg
+  cancel-in-progress: true
+
+jobs:
+  build-all:
+    name: Build Gutenberg branches
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Checkout WordPress/gutenberg
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: WordPress/gutenberg
+          path: gutenberg-dev
+          fetch-depth: 0
+
+      - name: Checkout peterwilsoncc/gutenberg-build
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          repository: peterwilsoncc/gutenberg-build
+          path: plugins/gutenberg-build
+          ssh-key: ${{ github.ref == 'refs/heads/main' && secrets.PWCC_DEPLOY_KEY || '' }}
+          fetch-depth: 0
+
+      - name: Fetch and create local tracking branches
+        run: |
+          cd plugins/gutenberg-build
+          # Fetch all branches
+          git fetch origin
+          # Create local tracking branches for all remote branches
+          for branch in $(git branch -r | grep -v '\->' | grep -E 'origin/(trunk|wp/|release/)' | sed 's/origin\///'); do
+            git branch --track "$branch" "origin/$branch" 2>/dev/null || echo "Branch $branch already exists"
+          done
+          # List all branches for verification
+          echo "Available local branches:"
+          git branch -a
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: 'gutenberg-dev/.nvmrc'
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "peterwilsonbcc"
+          git config --global user.email "wilson+peterwilsonbcc@peterwilson.cc"
+
+      - name: Build trunk branch
+        run: bash build-from-workflows.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Log trunk reversed commits file
+        run: |
+          echo "Contents of log-files/trunk-workflow-commits-reversed.txt:"
+          cat log-files/trunk-workflow-commits-reversed.txt
+
+      - name: Log trunk commits
+        run: |
+          cd plugins/gutenberg-build
+          echo "Recent commits on trunk branch:"
+          git log --oneline -20
+
+      - name: Build latest releases
+        run: bash build-latest-releases.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Log latest releases commits
+        run: |
+          cd plugins/gutenberg-build
+          echo "Branches built:"
+          git branch -a
+          echo "Recent commits:"
+          git log --all --oneline -20
+
+      - name: Build wp/6.7 branch
+        run: bash build-branch-from-workflows.sh wp/6.7
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Log wp/6.7 reversed commits file
+        run: |
+          echo "Contents of log-files/wp-6.7-workflow-commits-reversed.txt:"
+          cat log-files/wp-6.7-workflow-commits-reversed.txt
+
+      - name: Log wp/6.7 commits
+        run: |
+          cd plugins/gutenberg-build
+          git checkout wp/6.7
+          echo "Recent commits on wp/6.7 branch:"
+          git log --oneline -20
+
+      - name: Build wp/6.8 branch
+        run: bash build-branch-from-workflows.sh wp/6.8
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Log wp/6.8 reversed commits file
+        run: |
+          echo "Contents of log-files/wp-6.8-workflow-commits-reversed.txt:"
+          cat log-files/wp-6.8-workflow-commits-reversed.txt
+
+      - name: Log wp/6.8 commits
+        run: |
+          cd plugins/gutenberg-build
+          git checkout wp/6.8
+          echo "Recent commits on wp/6.8 branch:"
+          git log --oneline -20
+
+      - name: Build wp/6.9 branch
+        run: bash build-branch-from-workflows.sh wp/6.9
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Log wp/6.9 reversed commits file
+        run: |
+          echo "Contents of log-files/wp-6.9-workflow-commits-reversed.txt:"
+          cat log-files/wp-6.9-workflow-commits-reversed.txt
+
+      - name: Log wp/6.9 commits
+        run: |
+          cd plugins/gutenberg-build
+          git checkout wp/6.9
+          echo "Recent commits on wp/6.9 branch:"
+          git log --oneline -20
+
+      - name: Build wp/7.0 branch
+        run: bash build-branch-from-workflows.sh wp/7.0
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Log wp/7.0 reversed commits file
+        run: |
+          echo "Contents of log-files/wp-7.0-workflow-commits-reversed.txt:"
+          cat log-files/wp-7.0-workflow-commits-reversed.txt
+
+      - name: Log wp/7.0 commits
+        run: |
+          cd plugins/gutenberg-build
+          git checkout wp/7.0
+          echo "Recent commits on wp/7.0 branch:"
+          git log --oneline -20
+
+      - name: Build wp/7.1 branch
+        run: bash build-branch-from-workflows.sh wp/7.1
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Log wp/7.1 reversed commits file
+        run: |
+          echo "Contents of log-files/wp-7.1-workflow-commits-reversed.txt:"
+          cat log-files/wp-7.1-workflow-commits-reversed.txt
+
+      - name: Log wp/7.1 commits
+        run: |
+          cd plugins/gutenberg-build
+          git checkout wp/7.1
+          echo "Recent commits on wp/7.1 branch:"
+          git log --oneline -20
