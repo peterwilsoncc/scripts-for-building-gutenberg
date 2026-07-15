@@ -56,36 +56,6 @@ jobs:
           git config --global user.name "peterwilsonbcc"
           git config --global user.email "wilson+peterwilsonbcc@peterwilson.cc"
 
-      - name: Reset branches back 3 commits
-        run: |
-          cd plugins/gutenberg-build
-          # Reset trunk branch
-          if git rev-parse --verify trunk >/dev/null 2>&1; then
-            git checkout trunk
-            git reset --hard HEAD~3
-          fi
-          # Reset wp/6.7 branch
-          if git rev-parse --verify wp/6.7 >/dev/null 2>&1; then
-            git checkout wp/6.7
-            git reset --hard HEAD~3
-          fi
-          # Reset wp/6.8 branch
-          if git rev-parse --verify wp/6.8 >/dev/null 2>&1; then
-            git checkout wp/6.8
-            git reset --hard HEAD~3
-          fi
-          # Reset wp/6.9 branch
-          if git rev-parse --verify wp/6.9 >/dev/null 2>&1; then
-            git checkout wp/6.9
-            git reset --hard HEAD~3
-          fi
-          # Reset wp/7.0 branch
-          if git rev-parse --verify wp/7.0 >/dev/null 2>&1; then
-            git checkout wp/7.0
-            git reset --hard HEAD~3
-          fi
-          git checkout trunk || git checkout main
-
       - name: Build trunk branch
         run: bash build-from-workflows.sh
         env:
