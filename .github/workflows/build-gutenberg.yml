@@ -33,6 +33,19 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
+      - name: Fetch and create local tracking branches
+        run: |
+          cd plugins/gutenberg-build
+          # Fetch all branches
+          git fetch origin
+          # Create local tracking branches for all remote branches
+          for branch in $(git branch -r | grep -v '\->' | grep -E 'origin/(trunk|wp/|release/)' | sed 's/origin\///'); do
+            git branch --track "$branch" "origin/$branch" 2>/dev/null || echo "Branch $branch already exists"
+          done
+          # List all branches for verification
+          echo "Available local branches:"
+          git branch -a
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
