@@ -61,11 +61,13 @@ git checkout trunk;
 if [[ $(git branch --list $BRANCH) ]]; then
 	git checkout $BRANCH;
 
-	# Get the latest commit message from the branch.
-	commitSourceLine=$(git log -1 --pretty=%B | $REVERSE_CMD | tail -n2 | $REVERSE_CMD | tail -n1);
+	# Get the latest commit's source hash from the commit body.
+	latestSourceCommit=$(git log -1 --pretty=%B | grep -oE 'commit/[a-f0-9]{40}' | cut -d'/' -f2);
 
-	# Get the last 42 characters of the commits source line.
-	latestSourceCommit=$(echo $commitSourceLine | tail -c 41);
+	if [ -z "$latestSourceCommit" ]; then
+		echo "Error: Could not extract source commit from last build commit" >&2
+		exit 1
+	fi
 
 	echo "Most recent source commit: $latestSourceCommit";
 
