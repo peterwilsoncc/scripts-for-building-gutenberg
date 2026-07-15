@@ -294,8 +294,10 @@ while read commit; do
 			echo "Tag $commitTag already exists for commit $commit";
 			# Delete the tag locally
 			git tag -d $commitTag;
-			# Delete the tag remotely
-			git push origin :refs/tags/$commitTag;
+			# Delete the tag remotely if push is allowed
+			if should_allow_push; then
+				git push origin :refs/tags/$commitTag;
+			fi
 			# continue;
 		fi
 
@@ -308,5 +310,11 @@ while read commit; do
 done < $CURRENT_DIR/log-files/$BRANCH_FILE_NAME-workflow-commits-reversed.txt;
 
 cd $CURRENT_DIR/plugins/gutenberg-build;
-git push origin $BRANCH:$BRANCH --force;
-git push origin -f --tags;
+
+# Only push if not in GitHub Actions or on main branch
+if should_allow_push; then
+	git push origin $BRANCH:$BRANCH --force;
+	git push origin -f --tags;
+else
+	echo "Skipping git push (not on main branch in GitHub Actions)";
+fi

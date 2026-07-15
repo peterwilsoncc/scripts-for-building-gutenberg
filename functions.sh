@@ -1,5 +1,23 @@
 #!/bin/bash
 
+# Check if git push should be allowed
+# Returns 0 (true) if push is allowed, 1 (false) if not
+function should_allow_push() {
+	# If not in GitHub Actions, allow push
+	if [ "$GITHUB_ACTIONS" != "true" ]; then
+		return 0
+	fi
+
+	# In GitHub Actions, only allow push on main branch
+	if [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
+		echo "Running on main branch in GitHub Actions - push allowed"
+		return 0
+	else
+		echo "Running on non-main branch in GitHub Actions - push disabled"
+		return 1
+	fi
+}
+
 # Setup Node.js using fnm or nvm
 function setup_node() {
 	# Check if fnm is available
