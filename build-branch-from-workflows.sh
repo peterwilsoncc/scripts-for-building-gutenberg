@@ -151,7 +151,7 @@ $REVERSE_CMD $CURRENT_DIR/log-files/$BRANCH_FILE_NAME-workflow-commits.txt > $CU
 echo "" >> $CURRENT_DIR/log-files/$BRANCH_FILE_NAME-workflow-commits-reversed.txt;
 
 
-exit;
+# exit;
 
 
 

@@ -103,7 +103,7 @@ $REVERSE_CMD $CURRENT_DIR/log-files/$BRANCH-workflow-commits.txt > $CURRENT_DIR/
 echo "" >> $CURRENT_DIR/log-files/$BRANCH-workflow-commits-reversed.txt;
 
 
-exit;
+# exit;
 
 
 ## Loop through each commit from the bottom of the file and check it out.
