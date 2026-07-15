@@ -227,7 +227,7 @@ while read commit; do
 			# Delete the tag locally
 			git tag -d $commitTag;
 			# Delete the tag remotely
-			git push origin :refs/tags/$commitTag;
+			# git push origin :refs/tags/$commitTag;
 			# continue;
 		fi
 
@@ -237,5 +237,5 @@ while read commit; do
 done < $CURRENT_DIR/log-files/$BRANCH-workflow-commits-reversed.txt;
 
 cd $CURRENT_DIR/plugins/gutenberg-build;
-git push origin $BRANCH:$BRANCH --force;
-git push origin --tags;
+# git push origin $BRANCH:$BRANCH --force;
+# git push origin --tags;
