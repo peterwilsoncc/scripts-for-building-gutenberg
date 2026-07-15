@@ -61,6 +61,9 @@ git checkout trunk;
 if [[ $(git branch --list $BRANCH) ]]; then
 	git checkout $BRANCH;
 
+	# Pull latest changes from origin
+	git pull origin $BRANCH || echo "Warning: Could not pull from origin";
+
 	# Get the latest commit's source hash from the commit body.
 	# Get the full commit message
 	commitBody=$(git log -1 --pretty=%B);
