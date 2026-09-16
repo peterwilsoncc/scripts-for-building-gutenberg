@@ -307,14 +307,16 @@ while read commit; do
 		git tag --no-sign -f $commitTag;
 	done
 
+	cd $CURRENT_DIR/plugins/gutenberg-build;
+
+	# Only push if not in GitHub Actions or on main branch
+	if should_allow_push; then
+		git push origin $BRANCH:$BRANCH --force;
+		git push origin -f --tags;
+	else
+		echo "Skipping git push (not on main branch in GitHub Actions)";
+	fi
+
+
 done < $CURRENT_DIR/log-files/$BRANCH_FILE_NAME-workflow-commits-reversed.txt;
 
-cd $CURRENT_DIR/plugins/gutenberg-build;
-
-# Only push if not in GitHub Actions or on main branch
-if should_allow_push; then
-	git push origin $BRANCH:$BRANCH --force;
-	git push origin -f --tags;
-else
-	echo "Skipping git push (not on main branch in GitHub Actions)";
-fi
