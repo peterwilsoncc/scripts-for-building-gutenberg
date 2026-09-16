@@ -215,21 +215,21 @@ while read commit; do
 	mkdir -p $CURRENT_DIR/gutenberg-zip;
 	rm -rf $CURRENT_DIR/gutenberg-zip/*;
 
-	needToDoItTheHardWay=false;
+	needToDoItTheHardWay=true;
 
 	# Download the workflow artifacts if they exist. Fail gracefully if they don't.
-	if [ -z "$workflowID" ]; then
-		echo "No workflow found for commit $commit";
-		needToDoItTheHardWay=true;
-	else
-		response=$(gh run download $workflowID --dir=$CURRENT_DIR/gutenberg-zip --repo=WordPress/gutenberg 2>&1);
-		if [[ $? -eq 0 ]]; then
-			echo "Downloaded workflow artifacts for commit $commit";
-		else
-			echo "Failed to download workflow artifacts for commit $commit";
-			needToDoItTheHardWay=true;
-		fi
-	fi
+	# if [ -z "$workflowID" ]; then
+	# 	echo "No workflow found for commit $commit";
+	# 	needToDoItTheHardWay=true;
+	# else
+	# 	response=$(gh run download $workflowID --dir=$CURRENT_DIR/gutenberg-zip --repo=WordPress/gutenberg --name=gutenberg.zip 2>&1);
+	# 	if [[ $? -eq 0 ]]; then
+	# 		echo "Downloaded workflow artifacts for commit $commit";
+	# 	else
+	# 		echo "Failed to download workflow artifacts for commit $commit";
+	# 		needToDoItTheHardWay=true;
+	# 	fi
+	# fi
 
 	if [ "$needToDoItTheHardWay" = true ]; then
 		cd $CURRENT_DIR/gutenberg-dev;
