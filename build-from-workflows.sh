@@ -191,8 +191,8 @@ while read commit; do
 		setup_node;
 		npm i;
 
-		# Run the script bin/build-plugin-zip.sh
-		NO_CHECKS=true ./bin/build-plugin-zip.sh
+		# Build the zip file.
+		NO_CHECKS=true npm run build:plugin-zip
 
 		cd $CURRENT_DIR;
 		mkdir -p $CURRENT_DIR/gutenberg-zip/gutenberg-plugin;
