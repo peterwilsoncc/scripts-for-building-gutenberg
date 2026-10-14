@@ -42,18 +42,6 @@ jobs:
             echo "nvm was not found in the GitHub Actions runner environment"
           fi
 
-      - name: Check NVM in PATH
-        shell: bash -l -eo pipefail {0}
-        run: |
-          if nvm_path="$(type -P nvm)"; then
-            echo "nvm executable in PATH: yes ($nvm_path)"
-          else
-            echo "nvm executable in PATH: no"
-          fi
-
-      - name: Exit
-        run: exit 1;
-
       - name: Checkout peterwilsoncc/gutenberg-build
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
