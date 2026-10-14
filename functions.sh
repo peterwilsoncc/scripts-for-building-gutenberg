@@ -20,27 +20,32 @@ function should_allow_push() {
 
 # Setup Node.js using fnm or nvm
 function setup_node() {
+	local node_version="${1:-}"
+
 	# Check if fnm is available
 	if command -v fnm &>/dev/null; then
 		echo "Using fnm to setup Node.js"
-		fnm use --install-if-missing
+		if [[ -n "$node_version" ]]; then
+			fnm use --install-if-missing "$node_version"
+		else
+			fnm use --install-if-missing
+		fi
 		return 0
+	fi
+
+	if ! command -v nvm &>/dev/null && [ -s "$NVM_DIR/nvm.sh" ]; then
+		source "$NVM_DIR/nvm.sh"
 	fi
 
 	if command -v nvm &>/dev/null; then
 		echo "Using nvm to setup Node.js"
-		nvm install
-		nvm use
-	fi
-
-	# Check if nvm is available
-	if [ -s "$NVM_DIR/nvm.sh" ]; then
-		echo "Using nvm to setup Node.js"
-		# Load nvm
-		source "$NVM_DIR/nvm.sh"
-		# Install and use the version from .nvmrc
-		nvm install
-		nvm use
+		if [[ -n "$node_version" ]]; then
+			nvm install "$node_version"
+			nvm use "$node_version"
+		else
+			nvm install
+			nvm use
+		fi
 		return 0
 	fi
 

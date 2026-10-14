@@ -188,8 +188,7 @@ while read commit; do
 	if [ "$needToDoItTheHardWay" = true ]; then
 		cd $CURRENT_DIR/gutenberg-dev;
 		# Setup Node.js using fnm or nvm
-		# setup_node;
-		nvm use 24.20
+		setup_node 24.20
 		npm i;
 
 		# Build the zip file.
