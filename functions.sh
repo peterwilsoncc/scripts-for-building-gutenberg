@@ -27,6 +27,12 @@ function setup_node() {
 		return 0
 	fi
 
+	if command -v nvm &>/dev/null; then
+		echo "Using nvm to setup Node.js"
+		nvm install
+		nvm use
+	fi
+
 	# Check if nvm is available
 	if [ -s "$HOME/.nvm/nvm.sh" ]; then
 		echo "Using nvm to setup Node.js"
