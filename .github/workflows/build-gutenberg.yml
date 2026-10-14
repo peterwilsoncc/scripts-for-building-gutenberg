@@ -8,8 +8,8 @@ on:
   pull_request:
     branches:
       - main
-  # schedule:
-  #   - cron: '5 */2 * * *'
+  schedule:
+    - cron: '5 */2 * * *'
 
 concurrency:
   group: build-gutenberg
