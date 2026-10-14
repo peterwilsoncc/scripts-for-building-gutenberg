@@ -34,10 +34,10 @@ function setup_node() {
 	fi
 
 	# Check if nvm is available
-	if [ -s "$HOME/.nvm/nvm.sh" ]; then
+	if [ -s "$NVM_DIR/nvm.sh" ]; then
 		echo "Using nvm to setup Node.js"
 		# Load nvm
-		source "$HOME/.nvm/nvm.sh"
+		source "$NVM_DIR/nvm.sh"
 		# Install and use the version from .nvmrc
 		nvm install
 		nvm use
