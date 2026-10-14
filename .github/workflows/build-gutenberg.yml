@@ -81,7 +81,7 @@ jobs:
           git config --global user.email "wilson+peterwilsonbcc@peterwilson.cc"
 
       - name: Build trunk branch
-        shell: bash -l {0}
+        shell: bash -l -eo pipefail {0}
         run: bash build-from-workflows.sh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -98,7 +98,7 @@ jobs:
           git log --oneline -20
 
       - name: Build latest releases
-        shell: bash -l {0}
+        shell: bash -l -eo pipefail {0}
         run: bash build-latest-releases.sh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -112,7 +112,7 @@ jobs:
           git log --all --oneline -20
 
       - name: Build wp/6.7 branch
-        shell: bash -l {0}
+        shell: bash -l -eo pipefail {0}
         run: bash build-branch-from-workflows.sh wp/6.7
         env:
           GH_TOKEN: ${{ github.token }}
@@ -130,7 +130,7 @@ jobs:
           git log --oneline -20
 
       - name: Build wp/6.8 branch
-        shell: bash -l {0}
+        shell: bash -l -eo pipefail {0}
         run: bash build-branch-from-workflows.sh wp/6.8
         env:
           GH_TOKEN: ${{ github.token }}
@@ -148,7 +148,7 @@ jobs:
           git log --oneline -20
 
       - name: Build wp/6.9 branch
-        shell: bash -l {0}
+        shell: bash -l -eo pipefail {0}
         run: bash build-branch-from-workflows.sh wp/6.9
         env:
           GH_TOKEN: ${{ github.token }}
@@ -166,7 +166,7 @@ jobs:
           git log --oneline -20
 
       - name: Build wp/7.0 branch
-        shell: bash -l {0}
+        shell: bash -l -eo pipefail {0}
         run: bash build-branch-from-workflows.sh wp/7.0
         env:
           GH_TOKEN: ${{ github.token }}
@@ -177,7 +177,7 @@ jobs:
           cat log-files/wp-7.0-workflow-commits-reversed.txt
 
       - name: Log wp/7.0 commits
-        shell: bash -l {0}
+        shell: bash -l -eo pipefail {0}
         run: |
           cd plugins/gutenberg-build
           git checkout wp/7.0
